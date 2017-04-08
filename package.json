@@ -1,0 +1,23 @@
+{
+  "name": "trol",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Sergii Zinkevych <s.zinkevych@gmail.com>",
+  "license": "ISC",
+  "devDependencies": {
+    "babel-preset-es2015": "^6.24.0",
+    "babel-register": "^6.24.0"
+  },
+  "dependencies": {
+    "find-color": "^0.1.0",
+    "get-image-colors": "^1.8.1",
+    "imagemagick": "^0.1.3",
+    "node-tesseract": "^0.2.7",
+    "numeral": "^2.0.6",
+    "tesseract.js": "^1.0.10"
+  }
+}
