@@ -29,13 +29,20 @@ export default class Cropper {
     }
 
     run() {
-        return Promise.all([
+
+        const promises = [
             this.crop('prize_pot', CROP_OPTIONS.PRIZE_POT),
-            this.crop('stack', CROP_OPTIONS.STACK),
             this.crop('blinds', CROP_OPTIONS.BLINDS),
             this.crop('call_amount', CROP_OPTIONS.CALL_AMOUNT),
             this.crop('card_1', CROP_OPTIONS.CARD_1),
             this.crop('card_2', CROP_OPTIONS.CARD_2)
-        ])
+        ];
+        CROP_OPTIONS.PLAYERS.forEach((data, index) => {
+            promises.push(this.crop(`player_${index}_stack`, data.STACK))
+        });
+
+        return Promise.all(promises).then(() => {
+            return this.cropped_images;
+        })
     }
 }

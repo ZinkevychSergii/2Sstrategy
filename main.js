@@ -1,12 +1,11 @@
 import Cropper from './Cropper.class';
-import Parser from './Parser.class';
-const cr = new Cropper('Screen Shot 2017-04-04 at 11.39.45 PM.png');
-console.time('test');
+import Options from './Options.class';
+
+
+const cr = new Cropper('Screen Shot 2017-04-08 at 9.42.42 AM.png');
 cr.run()
-    .then(() => {
-        const parser = new Parser(cr.cropped_images);
-        parser.run().then(() => {
-            console.info(parser.data)
-            console.timeEnd('test');
-        });
-    });
+    .then(cropped_images => {
+        const options = new Options(cropped_images);
+        return options.getAll();
+    })
+    .then(console.info);

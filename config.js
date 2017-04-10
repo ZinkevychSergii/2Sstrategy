@@ -1,3 +1,5 @@
+export const HERO_NAME = 'me';
+
 export const SCREENSHOTS_PATH = `${__dirname}/screenshots/`;
 /**
  * Upload image to http://getspritexy.com/ and find yours coords
@@ -5,11 +7,21 @@ export const SCREENSHOTS_PATH = `${__dirname}/screenshots/`;
  */
 export const CROP_OPTIONS = {
     PRIZE_POT: { width: 266, height: 48, x: 896, y: 477 },
-    STACK: { width: 157, height: 46, x: 899, y: 1145 },
-    BLINDS: { width: 450, height: 30, x: 810, y: 53 },
+    BLINDS: { width: 364, height: 36, x: 671, y: 52 },
     CALL_AMOUNT: { width: 332, height: 126, x: 1345, y: 1368 },
     CARD_1: { width: 38, height: 42, x: 907, y: 983 },
     CARD_2: { width: 38, height: 42, x: 1037, y: 983 },
+    PLAYERS: [
+        {
+            STACK: { width: 157, height: 46, x: 899, y: 1145 },
+        }
+    ]
 };
 
-export const PS_LANG = 'eng';
+export const TESSERACT_OPTIONS = {
+    CARD: {'tessedit_char_whitelist': '23456789TJQKA'},
+    POT: {'tessedit_char_whitelist': 'POT: $0123456789'},
+    CALL: {'tessedit_char_whitelist': 'CAL $0123456789'},
+    BLINDS: {'tessedit_char_whitelist': 'Blinds $0123456789/-Tournament'},
+    MONEY: {'tessedit_char_whitelist': '$0123456789'},
+}
