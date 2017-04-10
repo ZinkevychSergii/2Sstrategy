@@ -13,7 +13,6 @@ export default class Parser {
      */
     static ParseImage(image, options = {}) {
         console.time('parse image' + image)
-
         return new Promise((resolve, reject) => {
             Tesseract
                 .recognize(image, options)

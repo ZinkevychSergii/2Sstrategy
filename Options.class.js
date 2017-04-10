@@ -116,7 +116,7 @@ export default class Options {
      */
     parseHand() {
         return Promise.all([
-            this.parseCard(this.images.card_1),
+            // this.parseCard(this.images.card_1),
             this.parseCard(this.images.card_2),
         ]).then(data => {
             this.data.hand = data;
@@ -140,11 +140,11 @@ export default class Options {
 
     getAll() {
         return Promise.all([
-            this.parsePlayer(0),
             // this.parseStack(),
             // this.parseCallAmount(),
-            this.parseBlinds(),
-            this.parsePrizePot(),
+            // this.parsePlayer(0),
+            // this.parseBlinds(),
+            // this.parsePrizePot(),
             this.parseHand()
         ]).then(this.format.bind(this));
     }
@@ -157,6 +157,7 @@ export default class Options {
     }
 
     format() {
+        return this.data;
         return {
             bb: this.data.blinds.big,
             board: [],
