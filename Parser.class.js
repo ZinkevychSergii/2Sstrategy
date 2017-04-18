@@ -1,4 +1,6 @@
 import Tesseract from 'tesseract.js';
+import okrabyte from 'okrabyte';
+const tesseract = require('node-tesseract');
 import numeral from 'numeral';
 import getColors from 'get-image-colors';
 import * as findColor from 'find-color';
@@ -12,15 +14,29 @@ export default class Parser {
      * @returns {Promise}
      */
     static ParseImage(image, options = {}) {
-        console.time('parse image' + image)
+        console.time('parse image' + image);
         return new Promise((resolve, reject) => {
-            Tesseract
-                .recognize(image, options)
-                .then(result => {
+
+            if(options.light) {
+                tesseract.process(image, options, function(err, text) {
                     console.timeEnd('parse image' + image);
-                    resolve(result.text);
-                })
-                .catch(err => reject(err))
+                    if(err) return reject(err);
+                    resolve(text);
+                });
+            } else {
+                okrabyte.decodeFile(image, (err, text) => {
+                    console.timeEnd('parse image' + image);
+                    if(err) return reject(err);
+                    resolve(text);
+                });
+                // Tesseract
+                //     .recognize(image, options)
+                //     .then(result => {
+                //         console.timeEnd('parse image' + image);
+                //         resolve(result.text);
+                //     })
+                //     .catch(err => reject(err))
+            }
         });
     }
 

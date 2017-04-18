@@ -7,6 +7,7 @@ export default class Cropper {
      */
     constructor(image) {
         this.image = `${SCREENSHOTS_PATH}${image}`;
+        this.resized = `${SCREENSHOTS_PATH}resized_${image}`;
         this.cropped_images = {};
     }
 
@@ -19,17 +20,36 @@ export default class Cropper {
     crop(name, options) {
         const parameters = `${options.width}x${options.height}+${options.x}+${options.y}`;
         const outputPath = `${SCREENSHOTS_PATH}${name}.png`;
+        let convertOptions = [
+            this.image, '-crop', parameters,
+        ];
+        if(options.crop) {
+            convertOptions = convertOptions.concat(options.crop);
+        }
+        convertOptions.push(outputPath);
         return new Promise((resolve, reject) => {
-            im.convert([this.image, '-crop', parameters, outputPath], err => {
+            im.convert(convertOptions, err => {
                 if (err) return reject(err);
                 this.cropped_images[name] = outputPath;
-                resolve(outputPath)
+                resolve(outputPath);
             });
         });
     }
 
-    run() {
+    resize() {
+        return new Promise((resolve, reject) => {
+            im.resize({
+                srcPath: this.image,
+                dstPath: this.resized,
+                width: 500
+            }, err => {
+                if(err) return reject(err);
+                resolve();
+            })
+        })
+    }
 
+    run() {
         const promises = [
             this.crop('prize_pot', CROP_OPTIONS.PRIZE_POT),
             this.crop('blinds', CROP_OPTIONS.BLINDS),
@@ -39,6 +59,8 @@ export default class Cropper {
         ];
         CROP_OPTIONS.PLAYERS.forEach((data, index) => {
             promises.push(this.crop(`player_${index}_stack`, data.STACK))
+            promises.push(this.crop(`player_${index}_position`, data.POSITION))
+            promises.push(this.crop(`player_${index}_bet`, data.BET))
         });
 
         return Promise.all(promises).then(() => {

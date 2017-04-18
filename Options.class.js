@@ -1,11 +1,19 @@
 import Parser from './Parser.class';
-import { TESSERACT_OPTIONS, HERO_NAME } from './config';
+import {
+    CROP_OPTIONS,
+    TESSERACT_OPTIONS,
+    HERO_NAME,
+    POSITION,
+    BUTTON_COLOR,
+    TABLE_COLOR,
+    ACTION
+} from './config';
 
 export default class Options {
 
     constructor(images) {
         this.images = images;
-        this.data = { players: []};
+        this.data = { players: [{},{},{}]};
     }
 
     /**
@@ -16,6 +24,28 @@ export default class Options {
         return Parser.ParseImage(this.images[`player_${index}_stack`], TESSERACT_OPTIONS.MONEY).then(raw => {
             return { raw, amount: Parser.ParseAmount(raw)[0] }
         });
+    }
+
+    /**
+     * Parse bet
+     * @param index
+     * @returns {Promise.<TResult>}
+     */
+    parseBet(index) {
+        return Parser.ParseImage(this.images[`player_${index}_bet`], TESSERACT_OPTIONS.MONEY).then(raw => {
+            return { raw, amount: Parser.ParseAmount(raw)[0] }
+        });
+    }
+
+    /**
+     * Get position
+     * @param index
+     */
+    parsePosition(index) {
+        return Parser.ParseColor(this.images[`player_${index}_position`]).then(colors => {
+            const nearestColor = Parser.FindNearestColor([BUTTON_COLOR, TABLE_COLOR], colors[0]);
+            return nearestColor == BUTTON_COLOR ? POSITION.BUTTON : 'some other';
+        })
     }
 
     /**
@@ -65,7 +95,7 @@ export default class Options {
             {name: 'd', color: ['#2837EC'], change: 0},
             {name: 'c', color: ['#418F2D'], change: 0},
             {name: 'h', color: ['#D01A1C'], change: 0},
-            {name: 's', color: ['#000000', '#0B0B0B'], change: 0}
+            {name: 's', color: ['#000000', '#0B0B0B', '#090909'], change: 0}
         ];
 
         const suitsColorsArr = [];
@@ -75,7 +105,7 @@ export default class Options {
             });
         });
 
-        const avoidColor = ['#F2F2F2', '#7C7C7C', '#646464', '#848484'];
+        const avoidColor = ['#F2F2F2', '#7C7C7C', '#646464', '#848484', '#F3F3F3'];
 
         return Parser.ParseColor(card).then(colors => {
             colors
@@ -104,7 +134,10 @@ export default class Options {
             this.findSuit(card)
         ]).then(data => {
             return {
-                rank: data[0].match(/([23456789TJQKA]){1}/)[0],
+                rank: data[0]
+                    .replace('l', '1')
+                    .replace('o', '0')
+                    .match(/([0123456789TJQKA]){1,2}/)[0],
                 suit: data[1]
             };
         })
@@ -116,7 +149,7 @@ export default class Options {
      */
     parseHand() {
         return Promise.all([
-            // this.parseCard(this.images.card_1),
+            this.parseCard(this.images.card_1),
             this.parseCard(this.images.card_2),
         ]).then(data => {
             this.data.hand = data;
@@ -124,29 +157,73 @@ export default class Options {
         })
     }
 
+    /**
+     * Calculate players positions based on button index
+     * @param button_index
+     */
+    nlpPosition(button_index) {
+        switch (button_index) {
+            case 0:
+                this.data.players[1].position = POSITION.SB;
+                this.data.players[2].position = POSITION.BB;
+                break;
+            case 1:
+                this.data.players[2].position = POSITION.SB;
+                this.data.players[0].position = POSITION.BB;
+                break;
+            case 2:
+                this.data.players[0].position = POSITION.SB;
+                this.data.players[1].position = POSITION.BB;
+                break;
+        }
+    }
+
+    nlpAction(index) {
+        const player = this.data.players[index];
+        let action;
+
+        if (player.bet == player.stack) {
+            action = ACTION.ALL_IN;
+        } else if (player.bet == this.data.blinds.big) {
+            action = ACTION.CALL;
+        } else if (player.bet > this.data.blinds.big) {
+            action = ACTION.RAISE;
+        } else {
+            action = ACTION.FOLD;
+        }
+
+        return action;
+    }
+
     parsePlayer(index) {
         return Promise.all([
-            this.parseStack(index)
+            this.parseStack(index),
+            this.parsePosition(index),
+            this.parseBet(index)
         ]).then(data => {
-            this.data.players[index] = {
-                name: index == 0 ? HERO_NAME : `player${index}`,
-                position: '???',
-                action: '???',
-                bet: '??',
-                stack: data[0].amount
+            this.data.players[index].name = index == 0 ? HERO_NAME : `player${index}`;
+            if(!this.data.players[index].position)this.data.players[index].position = data[1];
+            this.data.players[index].bet = data[2].amount;
+            this.data.players[index].stack = data[0].amount;
+
+            if(data[1] == POSITION.BUTTON) {
+                this.nlpPosition(index);
             }
         })
     }
 
     getAll() {
-        return Promise.all([
-            // this.parseStack(),
-            // this.parseCallAmount(),
-            // this.parsePlayer(0),
-            // this.parseBlinds(),
-            // this.parsePrizePot(),
+        const promises = [
+            this.parseBlinds(),
+            this.parsePrizePot(),
             this.parseHand()
-        ]).then(this.format.bind(this));
+        ];
+
+        CROP_OPTIONS.PLAYERS.forEach((data, index) => {
+            promises.push(this.parsePlayer(index));
+        });
+
+        return Promise.all(promises).then(this.format.bind(this));
     }
 
     formatHand() {
@@ -156,14 +233,19 @@ export default class Options {
         ];
     }
 
+    formatPlayer(player, index) {
+        player.action = this.nlpAction(index);
+        return player;
+    }
+
     format() {
-        return this.data;
+        this.formatPlayer = this.formatPlayer.bind(this);
         return {
             bb: this.data.blinds.big,
             board: [],
             cards: this.formatHand(),
             pot: this.data.prize_pot.amount,
-            players: this.data.players
+            players: this.data.players.map(this.formatPlayer)
         }
     }
 }

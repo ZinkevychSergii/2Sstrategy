@@ -1,4 +1,3 @@
-require('babel-register')({
-    plugins: ["transform-object-rest-spread"]
-});
+require("source-map-support").install();
+require('babel-register')();
 require('./main.js');

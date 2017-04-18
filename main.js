@@ -3,7 +3,7 @@ import Options from './Options.class';
 
 
 console.time('full cycle')
-const cr = new Cropper('Screen Shot 2017-04-08 at 9.42.42 AM.png');
+const cr = new Cropper('Screen Shot 2017-04-08 at 9.43.08 AM.png');
 cr.run()
     .then(cropped_images => {
         const options = new Options(cropped_images);
