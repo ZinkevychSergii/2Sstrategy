@@ -6,7 +6,9 @@ import {
     POSITION,
     BUTTON_COLOR,
     TABLE_COLOR,
-    ACTION
+    ACTION,
+    IS_MY_TURN,
+    IS_MY_TURN_FALSE
 } from './config';
 
 export default class Options {
@@ -45,8 +47,22 @@ export default class Options {
         return Parser.ParseColor(this.images[`player_${index}_position`]).then(colors => {
             const nearestColor = Parser.FindNearestColor([BUTTON_COLOR, TABLE_COLOR], colors[0]);
             return nearestColor == BUTTON_COLOR ? POSITION.BUTTON : 'some other';
-        })
+        });
     }
+
+    /**
+     * Check if user in play
+     * @param index
+     */
+    // inPlay(index) {
+    //     if(index == 0) return Promise.resolve(true);
+    //     return Parser.ParseColor(this.images[`player_${index}_in_play`]).then(colors => {
+    //         console.info('in play ', index, colors);
+    //         return false;
+    //         // const nearestColor = Parser.FindNearestColor([BUTTON_COLOR, TABLE_COLOR], colors[0]);
+    //         // return nearestColor == BUTTON_COLOR ? POSITION.BUTTON : 'some other';
+    //     });
+    // }
 
     /**
      * Get call amount
@@ -133,11 +149,16 @@ export default class Options {
             Parser.ParseImage(card, TESSERACT_OPTIONS.CARD),
             this.findSuit(card)
         ]).then(data => {
+            console.info(data);
+            const rank = data[0]
+                .replace('l', '1')
+                .replace('o', '0')
+                .replace('ó', '6')
+                .replace('B', '8')
+                .replace('a', '8')
+                .match(/([0123456789TJQKA]){1,2}/)[0];
             return {
-                rank: data[0]
-                    .replace('l', '1')
-                    .replace('o', '0')
-                    .match(/([0123456789TJQKA]){1,2}/)[0],
+                rank: rank == '10' ? 'T' : rank,
                 suit: data[1]
             };
         })
@@ -182,12 +203,18 @@ export default class Options {
         const player = this.data.players[index];
         let action;
 
-        if (player.bet == player.stack) {
+        if(index == 0) {
+            action = ACTION.IN_PLAY;
+        } else if (player.stack == 0 && player.bet > 0) {
             action = ACTION.ALL_IN;
         } else if (player.bet == this.data.blinds.big) {
             action = ACTION.CALL;
         } else if (player.bet > this.data.blinds.big) {
             action = ACTION.RAISE;
+        } else if(player.stack == 0) {
+            action = ACTION.OUT;
+        } else if (this.data.players[0].position == POSITION.BUTTON) {
+            action = ACTION.IN_PLAY
         } else {
             action = ACTION.FOLD;
         }
@@ -199,7 +226,8 @@ export default class Options {
         return Promise.all([
             this.parseStack(index),
             this.parsePosition(index),
-            this.parseBet(index)
+            this.parseBet(index),
+            // this.inPlay(index)
         ]).then(data => {
             this.data.players[index].name = index == 0 ? HERO_NAME : `player${index}`;
             if(!this.data.players[index].position)this.data.players[index].position = data[1];
@@ -212,25 +240,59 @@ export default class Options {
         })
     }
 
+    checkIsMyTurn() {
+        return Parser.ParseColor(this.images.is_my_turn).then(colors => {
+            const nearestColor = Parser.FindNearestColor([IS_MY_TURN, IS_MY_TURN_FALSE], colors[0]);
+            return nearestColor == IS_MY_TURN
+        })
+    }
+
     getAll() {
-        const promises = [
-            this.parseBlinds(),
-            this.parsePrizePot(),
-            this.parseHand()
-        ];
 
-        CROP_OPTIONS.PLAYERS.forEach((data, index) => {
-            promises.push(this.parsePlayer(index));
+        return this.checkIsMyTurn().then(is_my_turn => {
+
+            if(!is_my_turn) return { info : 'not my turn' };
+
+            const promises = [
+                this.parseBlinds(),
+                this.parsePrizePot(),
+                this.parseHand()
+            ];
+
+            CROP_OPTIONS.PLAYERS.forEach((data, index) => {
+                promises.push(this.parsePlayer(index));
+            });
+
+            return Promise.all(promises).then(this.format.bind(this));
         });
-
-        return Promise.all(promises).then(this.format.bind(this));
     }
 
     formatHand() {
-        return [
-            `${this.data.hand[0].rank}${this.data.hand[0].suit}`,
-            `${this.data.hand[1].rank}${this.data.hand[1].suit}`
-        ];
+
+        let cardNumber = {
+            2: 0,
+            3: 1,
+            4: 2,
+            5: 3,
+            6: 4,
+            7: 5,
+            8: 6,
+            9: 7,
+            'T': 8,
+            'J': 9,
+            'Q': 10,
+            'K': 11,
+            'A': 12
+        };
+
+        let hand = [this.data.hand[1].rank, this.data.hand[0].rank].sort((a,b) => cardNumber[a] <= cardNumber[b]).join('');
+        hand += (this.data.hand[0].suit == this.data.hand[1].suit) ? 's' : 'o';
+
+        return hand;
+        // return [
+        //     `${this.data.hand[0].rank}${this.data.hand[0].suit}`,
+        //     `${this.data.hand[1].rank}${this.data.hand[1].suit}`
+        // ];
     }
 
     formatPlayer(player, index) {
@@ -245,7 +307,9 @@ export default class Options {
             board: [],
             cards: this.formatHand(),
             pot: this.data.prize_pot.amount,
-            players: this.data.players.map(this.formatPlayer)
+            players: this.data.players
+                .map(this.formatPlayer)
+                .filter(player => [ACTION.FOLD, ACTION.OUT].indexOf(player.action) == -1)
         }
     }
 }
