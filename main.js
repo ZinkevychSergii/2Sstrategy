@@ -1,15 +1,17 @@
+import colors from 'colors';
 import Cropper from './Cropper.class';
-import Options from './Options.class';
+import PrepareData from './PrepareData.class';
 
 
 console.time('full cycle')
-const cr = new Cropper('Screen Shot 2017-04-08 at 9.43.08 AM.png');
+const cr = new Cropper('Screen Shot 2017-04-19 at 9.31.15 AM.png');
 cr.run()
     .then(cropped_images => {
-        const options = new Options(cropped_images);
-        return options.getAll();
+        const data = new PrepareData(cropped_images);
+        return data.getAll()
     })
-    .then(options => {
-        console.info(options);
+    .then(data => {
+        console.info(data);
         console.timeEnd('full cycle');
-    });
+    })
+    .catch(console.warn);

@@ -1,0 +1,29 @@
+{
+  "bb": 30,
+  "board": [],
+  "cards": ["2s","Jh"],
+  "pot": 45,
+  "players": [
+    {
+      "name": "me",
+      "position": "BB",
+      "bet": 30,
+      "stack": 385,
+      "action": "CALL"
+    },
+    {
+      "position": "BB",
+      "name": "player1",
+      "bet": 40,
+      "stack": 170,
+      "action": "CALL"
+    },
+    {
+      "name": "player2",
+      "position": "BUTTON",
+      "bet": 40,
+      "stack": 865,
+      "action": "CALL"
+    }
+  ]
+}

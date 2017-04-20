@@ -1,0 +1,29 @@
+{
+  "bb": 30,
+  "board": [],
+  "cards": ["9d","2s"],
+  "pot": 45,
+  "players": [
+    {
+      "name": "me",
+      "position": "BUTTON",
+      "bet": 0,
+      "stack": 415,
+      "action": "FOLD"
+    },
+    {
+      "position": "BB",
+      "name": "player1",
+      "bet": 40,
+      "stack": 170,
+      "action": "CALL"
+    },
+    {
+      "name": "player2",
+      "position": "BUTTON",
+      "bet": 40,
+      "stack": 865,
+      "action": "CALL"
+    }
+  ]
+}

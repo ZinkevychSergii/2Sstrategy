@@ -46,7 +46,7 @@ export default class Parser {
      * @returns {*}
      */
     static ParseAmount(raw) {
-        const amount = raw.match(/(\$[\d ]+)/gi);
+        const amount = raw.replace('S', '$').match(/(\$[\d ,]+)/gi);
         return amount ? amount.map(a => numeral(a).value()) : [0];
     }
 

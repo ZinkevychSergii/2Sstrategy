@@ -285,10 +285,15 @@ export default class Options {
             'A': 12
         };
 
-        let hand = [this.data.hand[1].rank, this.data.hand[0].rank].sort((a,b) => cardNumber[a] <= cardNumber[b]).join('');
-        hand += (this.data.hand[0].suit == this.data.hand[1].suit) ? 's' : 'o';
+        let { hand } = this.data;
 
-        return hand;
+
+        let formattedHand = [hand[1].rank, hand[0].rank].sort((a,b) => cardNumber[a] <= cardNumber[b]).join('');
+        if (hand[0].rank != hand[1].rank) {
+            formattedHand += (hand[0].suit == hand[1].suit) ? 's' : 'o';
+        }
+
+        return formattedHand;
         // return [
         //     `${this.data.hand[0].rank}${this.data.hand[0].suit}`,
         //     `${this.data.hand[1].rank}${this.data.hand[1].suit}`

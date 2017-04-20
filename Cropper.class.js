@@ -53,14 +53,16 @@ export default class Cropper {
         const promises = [
             this.crop('prize_pot', CROP_OPTIONS.PRIZE_POT),
             this.crop('blinds', CROP_OPTIONS.BLINDS),
-            this.crop('call_amount', CROP_OPTIONS.CALL_AMOUNT),
+            // this.crop('call_amount', CROP_OPTIONS.CALL_AMOUNT),
             this.crop('card_1', CROP_OPTIONS.CARD_1),
-            this.crop('card_2', CROP_OPTIONS.CARD_2)
+            this.crop('card_2', CROP_OPTIONS.CARD_2),
+            this.crop('is_my_turn', CROP_OPTIONS.IS_MY_TURN)
         ];
         CROP_OPTIONS.PLAYERS.forEach((data, index) => {
-            promises.push(this.crop(`player_${index}_stack`, data.STACK))
-            promises.push(this.crop(`player_${index}_position`, data.POSITION))
-            promises.push(this.crop(`player_${index}_bet`, data.BET))
+            promises.push(this.crop(`player_${index}_stack`, data.STACK));
+            promises.push(this.crop(`player_${index}_position`, data.POSITION));
+            promises.push(this.crop(`player_${index}_bet`, data.BET));
+            if(data.IN_PLAY) promises.push(this.crop(`player_${index}_in_play`, data.IN_PLAY));
         });
 
         return Promise.all(promises).then(() => {
