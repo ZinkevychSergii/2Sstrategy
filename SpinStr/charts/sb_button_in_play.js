@@ -1,4 +1,5 @@
 export default {
+    'name': 'Hero SB & Button in play',
     'every': [
         'AA', 'AKs', 'AQs', 'AJs', 'ATs', 'A9s', 'A8s', 'A7s', 'A6s',
         'AKo', 'KK', 'KQs', 'KJs', 'KTs',

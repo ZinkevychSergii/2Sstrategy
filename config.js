@@ -13,7 +13,7 @@ export const CROP_OPTIONS = {
     BLINDS: { width: 364, height: 36, x: 1440, y: 375 },
     // CALL_AMOUNT: { width: 332, height: 126, x: 1345, y: 1368 },
     CARD_1: { width: 30, height: 36, x: 1671, y: 1100 },
-    CARD_2: { width: 30, height: 36, x: 1768, y: 1100 },
+    CARD_2: { width: 30, height: 34, x: 1768, y: 1100 },
     IS_MY_TURN: { width: 1, height: 1, x: 2513, y: 1474 },
     PLAYERS: [
         /**

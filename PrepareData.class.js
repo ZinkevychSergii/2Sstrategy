@@ -306,15 +306,26 @@ export default class Options {
     }
 
     format() {
+        const { blinds, prize_pot, players } = this.data;
         this.formatPlayer = this.formatPlayer.bind(this);
+
+        let formattedPlayers = players
+            .map(this.formatPlayer)
+            .filter(player => [ACTION.FOLD, ACTION.OUT].indexOf(player.action) == -1);
+
+        if(formattedPlayers.length == 2) {
+            formattedPlayers.map(player => {
+                if(player.position == POSITION.BUTTON) player.position = POSITION.SB;
+                return player;
+            })
+        }
+
         return {
-            bb: this.data.blinds.big,
+            bb: blinds.big,
             board: [],
             cards: this.formatHand(),
-            pot: this.data.prize_pot.amount,
-            players: this.data.players
-                .map(this.formatPlayer)
-                .filter(player => [ACTION.FOLD, ACTION.OUT].indexOf(player.action) == -1)
+            pot: prize_pot.amount,
+            players: formattedPlayers
         }
     }
 }
