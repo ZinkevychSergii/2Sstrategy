@@ -1,6 +1,7 @@
 export const HERO_NAME = 'me';
 
 export const SCREENSHOTS_PATH = `${__dirname}/screenshots/`;
+export const SCREENSHOT_NAME = 'oooo.png';
 /**
  * Upload image to http://getspritexy.com/ and find yours coords
  * @type {{PRIZE_POT: {width: number, height: number, x: number, y: number}, STACK: {width: number, height: number, x: number, y: number}, BLINDS: {width: number, height: number, x: number, y: number}, CALL_AMOUNT: {width: number, height: number, x: number, y: number}}}
@@ -86,5 +87,6 @@ export const ACTION = {
     FOLD: 'FOLD',
     RAISE: 'RAISE',
     OUT: 'OUT',
-    IN_PLAY: 'IN_PLAY'
+    IN_PLAY: 'IN_PLAY',
+    CHECK: 'CHECK'
 }

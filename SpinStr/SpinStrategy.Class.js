@@ -1,5 +1,5 @@
 import Charts from './charts';
-import { POSITION, ACTION } from '../config';
+import { POSITION, ACTION, HERO_NAME } from '../config';
 
 export default class SpinStrategy {
 
@@ -12,11 +12,11 @@ export default class SpinStrategy {
         const hero = players[0];
         const heroStack = hero.stack + hero.bet;
         const effectiveStack = players.reduce((memo, player) => Math.min(player.stack + player.bet, heroStack), 0);
-        return Math.round(effectiveStack / bb);
+        return effectiveStack / bb;
     }
 
     getChart() {
-        const { players } = this.data;
+        const { players, cards } = this.data;
         const hero = players[0];
         let chart;
         const isButtonInPlay = players.find(player => player.position == POSITION.BUTTON);
@@ -35,7 +35,7 @@ export default class SpinStrategy {
                 } else if (isSBInPlay) {
                     chart = Charts.HeroBBSBInPlay;
                 } else {
-                    //TODO: aaaaaaaaaaaaaa!!!! no charts for this case
+                    //TODO: aaaaaaaaaaaaaa!!!! panic!!!! no charts for this case
                     chart = Charts.HeroSBButtonInPlay;
                 }
                 break;
@@ -44,20 +44,34 @@ export default class SpinStrategy {
         return chart;
     }
 
-    isAllIn() {
+    think() {
         const { chart, data: { cards, stackBB } } = this;
-        if(stackBB <= 3) return true;
-        if(stackBB < 6) return chart['less6'].indexOf(cards) != -1;
-        if(stackBB < 12) return chart['less12'].indexOf(cards) != -1;
+        let inChart;
+        if(stackBB <= 3) inChart = true;
+        else if(stackBB < 6) inChart = chart['less6'].indexOf(cards) != -1;
+        else if(stackBB < 12) inChart= chart['less12'].indexOf(cards) != -1;
+        else inChart = chart['every'].indexOf(cards) != -1;
 
-        return chart['every'].indexOf(cards) != -1;
+        if(inChart) {
+            return ACTION.ALL_IN;
+        } else {
+            return this.isFreePlay() ? ACTION.CHECK : ACTION.FOLD;
+        }
+    }
+
+    isFreePlay() {
+        const { players, bb, cards } = this.data;
+        if(players[0].position != POSITION.BB) return false;
+        const totalPlayers = players.length;
+        const limpPlayers = players.filter(player => player.bet == bb && player.name != HERO_NAME).length;
+        return totalPlayers == limpPlayers + 1;
     }
 
     decision() {
         this.chart = this.getChart();
         this.data.chartName = this.chart.name;
         this.data.stackBB = this.calcStackBB();
-        this.data.decision = this.isAllIn() ? ACTION.ALL_IN : ACTION.FOLD;
+        this.data.decision = this.think();
         return this.data;
     }
 }

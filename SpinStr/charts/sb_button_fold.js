@@ -28,7 +28,7 @@ export default {
         'K3o', 'Q3o',
         'K2o', 'Q2o'
     ],
-    'les6': [
+    'less6': [
         'T3s', 'T2s',
         '93s', '92s',
         'J6o', 'T6o', '96o',

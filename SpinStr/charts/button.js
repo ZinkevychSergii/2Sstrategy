@@ -28,7 +28,7 @@ export default {
         'A3o',
         'A2o'
     ],
-    'les6': [
+    'less6': [
         'Q4s', 'Q3s', 'Q2s',
         'J6s',
         'Q8o', 'J8o', 'T8o',
