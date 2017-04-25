@@ -3,11 +3,8 @@ var screenshot = require('desktop-screenshot');
 const path = `${SCREENSHOTS_PATH}${SCREENSHOT_NAME}`;
 
 export default () => new Promise((resolve, reject) => {
-    console.info('path ', path)
-    screenshot("screenshot.png", function(error, complete) {
-        if(error)
-            console.log("Screenshot failed", error);
-        else
-            console.log("Screenshot succeeded");
+    screenshot(path, function(error, complete) {
+        if(error) return reject(err);
+        resolve(SCREENSHOT_NAME);
     });
 });

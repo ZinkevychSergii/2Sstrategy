@@ -8,56 +8,61 @@ export const SCREENSHOT_NAME = 'oooo.png';
  */
 export const CROP_OPTIONS = {
     PRIZE_POT: {
-        width: 266, height: 48, x: 1688, y: 710,
+        width: 266, height: 48, x: 1679, y: 659,
         crop: ['-colorspace', 'Gray']
     },
-    BLINDS: { width: 364, height: 36, x: 1440, y: 375 },
+    BLINDS: {
+		width: 158, height: 35, x: 1314, y: 328,
+		//crop: ['-colorspace', 'Gray']
+	},
     // CALL_AMOUNT: { width: 332, height: 126, x: 1345, y: 1368 },
-    CARD_1: { width: 30, height: 36, x: 1671, y: 1100 },
-    CARD_2: { width: 30, height: 34, x: 1768, y: 1100 },
-    IS_MY_TURN: { width: 1, height: 1, x: 2513, y: 1474 },
+    CARD_1: { width: 28, height: 32, x: 1672, y: 1049 },
+    CARD_2: { width: 28, height: 32, x: 1768, y: 1049 },
+    IS_MY_TURN: { width: 1, height: 1, x: 2516, y: 1367 },
     PLAYERS: [
         /**
          * Me
          */
         {
             STACK: {
-                width: 162, height: 36, x: 1647, y: 1229,
+                width: 187, height: 40, x: 1650, y: 1176,
                 crop: ['-colorspace', 'Gray']
             },
             BET: {
-                width: 122, height: 38, x: 1927, y: 1011,
+                width: 122, height: 35, x: 1929, y: 962,
                 crop: ['-colorspace', 'Gray']
             },
-            POSITION: { width: 1, height: 1, x: 1913, y: 1087 }
+            POSITION: { width: 1, height: 1, x: 1913, y: 1041 }//TODO
         },
         /**
          * Left
          */
         {
             STACK: {
-                width: 150, height: 32, x: 1068, y: 695,
+                width: 163, height: 38, x: 1058, y: 642,
                 crop: ['-colorspace', 'Gray']
             },
             BET: {
-                width: 230, height: 32, x: 1403, y: 708,
+                width: 230, height: 33, x: 1448, y: 658,
                 crop: ['-colorspace', 'Gray']
             },
             // IN_PLAY: { width: 1, height: 1, x: 317, y: 483 },
-            POSITION: { width: 1, height: 1, x: 1340, y: 754 }
+            POSITION: { width: 1, height: 1, x: 1341, y: 703 }
         },
         /**
          * Right
          */
         {
             STACK: {
-                width: 148, height: 34, x: 2327, y: 693
+                width: 165, height: 40, x: 2328, y: 629,
+				crop: ['-colorspace', 'Gray']
             },
             BET: {
-                width: 140, height: 38, x: 2025, y: 706,                crop: ['-colorspace', 'Gray']
+                width: 107, height: 37, x: 2033, y: 654,
+				crop: ['-colorspace', 'Gray']
             },
             // IN_PLAY: { width: 1, height: 1, x: 1742, y: 483 },
-            POSITION: { width: 1, height: 1, x: 2232, y: 765 }
+            POSITION: { width: 1, height: 1, x: 2230, y: 715 }
         }
     ]
 };

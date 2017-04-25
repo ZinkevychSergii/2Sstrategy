@@ -24,6 +24,7 @@ export default class Options {
      */
     parseStack(index) {
         return Parser.ParseImage(this.images[`player_${index}_stack`], TESSERACT_OPTIONS.MONEY).then(raw => {
+			console.info('stack ', index, raw)
             return { raw, amount: Parser.ParseAmount(raw)[0] }
         });
     }
@@ -80,6 +81,7 @@ export default class Options {
      */
     parseBlinds() {
         return Parser.ParseImage(this.images.blinds, TESSERACT_OPTIONS.BLINDS).then(raw => {
+				console.info('blinds ', raw)
             const parsedAmount = Parser.ParseAmount(raw);
             this.data.blinds = {
                 raw,
@@ -322,7 +324,7 @@ export default class Options {
 
         return {
             bb: blinds.big,
-            board: [],
+            //board: [],
             cards: this.formatHand(),
             pot: prize_pot.amount,
             players: formattedPlayers

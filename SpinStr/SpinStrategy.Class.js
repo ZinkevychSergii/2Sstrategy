@@ -12,6 +12,7 @@ export default class SpinStrategy {
         const hero = players[0];
         const heroStack = hero.stack + hero.bet;
         const effectiveStack = players.reduce((memo, player) => Math.min(player.stack + player.bet, heroStack), 0);
+		console.info('effectiveStack ',bb,effectiveStack,heroStack)
         return effectiveStack / bb;
     }
 
